@@ -4,7 +4,7 @@ Chapter 5: Developing RESTful APIs with Flask
 Author: Gaston C. Hillar - Twitter.com/gastonhillar
 Publisher: Packt Publishing Ltd. - http://www.packtpub.com
 """
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_restful import abort, Api, fields, marshal_with, reqparse, Resource
 from datetime import datetime
 from models import MessageModel
@@ -14,6 +14,7 @@ from pytz import utc
 
 class MessageManager():
     last_id = 0
+
     def __init__(self):
         self.messages = {}
 
@@ -45,6 +46,7 @@ message_manager = MessageManager()
 
 
 class Message(Resource):
+
     def abort_if_message_doesnt_exist(self, id):
         if id not in message_manager.messages:
             abort(
@@ -105,9 +107,12 @@ class MessageList(Resource):
 
 
 app = Flask(__name__)
+# api_bp = Blueprint('api', __name__)
 api = Api(app)
 api.add_resource(MessageList, '/api/messages/')
 api.add_resource(Message, '/api/messages/<int:id>', endpoint='message_endpoint')
+
+# app.register_blueprint(api_bp)
 
 
 if __name__ == '__main__':
